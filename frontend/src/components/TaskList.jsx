@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { toggleTask, deleteTask } from "../api/api";
+import { toast } from "react-toastify";
+import { FaTrash, FaCheck } from "react-icons/fa";
 
 const TaskList = ({ tasks, onUpdate }) => {
-  const [error, setError] = useState(null);
 
   const handleToggle = async (id) => {
     try {
       await toggleTask(id);
-      setError(null);
+      toast.success("Task updated");
       onUpdate();
     } catch (err) {
       // Extract error from Axios or fallback
-      setError(
+      toast.error(
         err?.response?.data?.message || err.message || "Failed to toggle task"
       );
     }
@@ -20,11 +21,11 @@ const TaskList = ({ tasks, onUpdate }) => {
   const handleDelete = async (id) => {
     try {
       await deleteTask(id);
-      setError(null);
+      toast.success("Task deleted");
       onUpdate();
     } catch (err) {
       // Extract error from Axios or fallback
-      setError(
+      toast.error(
         err?.response?.data?.message || err.message || "Failed to delete task"
       );
     }
@@ -36,8 +37,6 @@ const TaskList = ({ tasks, onUpdate }) => {
 
   return (
     <>
-      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-
       <ul>
         {tasks.map((task) => (
           <li
@@ -46,10 +45,11 @@ const TaskList = ({ tasks, onUpdate }) => {
           >
             <span
               onClick={() => handleToggle(task.id)}
-              className={`flex-1 cursor-pointer ${
-                task.completed ? "line-through text-gray-500" : ""
-              }`} // Conditional styling for completed tasks
+              className={`flex-1 cursor-pointer flex items-center gap-2 
+                ${task.completed ? "line-through text-gray-500" : ""
+                }`} // Conditional styling for completed tasks
             >
+              {task.completed && <FaCheck className="text-green-500" />}
               {task.title}
             </span>
 
@@ -57,7 +57,7 @@ const TaskList = ({ tasks, onUpdate }) => {
               onClick={() => handleDelete(task.id)}
               className="text-red-500 hover:underline text-sm ml-4"
             >
-              Delete
+              <FaTrash />
             </button>
           </li>
         ))}

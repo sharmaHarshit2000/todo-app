@@ -1,24 +1,25 @@
 import { useState } from "react";
 import { addTask } from "../api/api";
+import { FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const TaskForm = ({ onTaskAdded }) => {
   const [title, setTitle] = useState("");
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError("Task title cannot be empty.");
+      toast.warn("Task title cannot be empty.");
       return;
     }
 
     try {
-      await addTask({ title });
+      await addTask({ title: title.trim() });
       setTitle("");
-      setError(null); 
+      toast.success("Task added successfully.");
       onTaskAdded();
     } catch (err) {
-      setError(
+      toast.error(
         err?.response?.data?.message || err.message || "Failed to add task"
       );
     }
@@ -31,15 +32,15 @@ const TaskForm = ({ onTaskAdded }) => {
         className="flex-1 border border-gray-300 p-2 rounded"
         placeholder="Enter a task..."
         value={title}
+        autoFocus
         onChange={(e) => setTitle(e.target.value)}
       />
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
       >
-        Add
+        <FaPlus /> Add
       </button>
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </form>
   );
 };
