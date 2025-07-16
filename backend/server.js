@@ -7,12 +7,20 @@ dotenv.config();
 
 const app = express();
 
+//Middlewares
+app.use(express.json()) //body parser
+
+//Routes
 app.use("/tasks", taskRoutes);
 
 //For testing the API is working
 app.get("/", (req, res) => {
     res.send("API is running...")
 })
+
+// Middleware (For notFound(404) Routes and Error handling )
+app.use(notFound);        
+app.use(errorHandler);    
 
 const PORT = process.env.PORT || 5000;
 
