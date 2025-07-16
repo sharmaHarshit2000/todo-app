@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors")
 const dotenv = require("dotenv");
 const taskRoutes = require("./routes/taskRoutes");
 const notFound = require("./middleware/notFound");
@@ -11,6 +12,7 @@ const app = express();
 
 //Middlewares
 app.use(express.json()) //body parser
+app.use(cors());
 
 //Routes
 app.use("/tasks", taskRoutes);
