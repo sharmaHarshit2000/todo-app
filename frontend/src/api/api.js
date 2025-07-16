@@ -5,7 +5,7 @@ const API = axios.create({
 });
 
 // Get all tasks
-export const fetchTask = () => API.get("/");
+export const fetchTasks = () => API.get("/");
 
 // Add a task
 export const addTask = (taskData) => API.post("/", taskData)

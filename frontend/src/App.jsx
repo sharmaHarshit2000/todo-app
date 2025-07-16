@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { fetchTasks } from "./api/api";
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const getTasks = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetchTasks();
+      setTasks(res.data.tasks);
+    } catch (err) {
+      console.log(err)
+      setError(
+        err?.response?.data?.message || err.message || "Failed to load tasks"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getTasks();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-100 p-4">
+      <div className="max-w-xl mx-auto bg-white p-6 shadow-md rounded-xl">
+        <h1 className="text-2xl font-bold mb-4 text-center">To-Do List</h1>
+
+        {loading && <p className="text-blue-600 mb-2 text-center">Loading tasks...</p>}
+        {error && <p className="text-red-500 mb-2 text-center">{error}</p>}
+
+        <TaskForm onTaskAdded={getTasks} />
+        <TaskList tasks={tasks} onUpdate={getTasks} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
